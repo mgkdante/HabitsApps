@@ -9,14 +9,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.winningmindset.feature_goals.presentation.add_edit_goals.AddEditGoalScreen
-import com.example.winningmindset.feature_goals.presentation.goals.GoalsScreen
-import com.example.winningmindset.feature_goals.presentation.util.Screen
 import com.example.winningmindset.ui.theme.WinningMindsetTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,30 +23,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = Screen.GoalsScreen.route
-                    ){
-                        composable(route = Screen.GoalsScreen.route){
-                            GoalsScreen(navController = navController)
-                        }
-
-                        composable(
-                            route = Screen.AddEditScreen.route +
-                                    "?goalId={goalId}",
-                            arguments = listOf(
-                                navArgument(
-                                    name = "goalId"
-                                ) {
-                                    type = NavType.IntType
-                                    defaultValue = -1
-                                }
-                            )
-                        ) {
-                            AddEditGoalScreen(navController = navController)
-                        }
-                    }
+                    AppContent()
                 }
             }
         }
@@ -66,14 +35,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     WinningMindsetTheme {
-        val navController = rememberNavController()
-        NavHost(
-            navController = navController,
-            startDestination = Screen.GoalsScreen.route
-        ) {
-            composable(route = Screen.GoalsScreen.route) {
-                GoalsScreen(navController = navController)
-            }
-        }
+        AppContent()
     }
 }

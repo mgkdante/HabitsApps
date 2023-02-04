@@ -39,6 +39,8 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,10 +52,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.winningmindset.feature_goals.domain.model.Goal.GoalColor.colors
+import com.example.winningmindset.feature_goals.presentation.ResolutionTopAppBar
+import com.example.winningmindset.feature_goals.presentation.util.Screen
 import com.example.winningmindset.ui.theme.Shapes
 import kotlinx.coroutines.flow.collectLatest
 
@@ -64,9 +69,15 @@ var currentUiColor = colors[0]
 @Composable
 fun AddEditGoalScreen(
     navController: NavController,
+    onNavigateUp: () -> Unit,
+    canNavigateBack: Boolean = true,
     viewModel: AddEditGoalViewModel = hiltViewModel()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val appBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+        appBarState
+    )
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -85,6 +96,15 @@ fun AddEditGoalScreen(
     }
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            ResolutionTopAppBar(
+                scrollBehavior = scrollBehavior,
+                title = Screen.AddEditScreen.title,
+                canNavigateBack = canNavigateBack,
+                navigateUp = onNavigateUp
+            )
+        },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         DataEntryBody(

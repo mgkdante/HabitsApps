@@ -68,6 +68,17 @@ class AddEditGoalViewModel @Inject constructor(
                         _goalColor.value = goalColor.value.copy(
                             color = goalWithMilestones.goal.color
                         )
+                        goalWithMilestones.milestones.forEach {
+                            milestonesListState.add(
+                                singleMilestoneState.value.copy(
+                                    milestone = it.milestone,
+                                    milestoneId = it.milestoneId,
+                                    parentGoal = it.parentGoal,
+                                    dateCreated = it.dateCreated
+                                )
+                            )
+                        }
+
                     }
                 }
             }
@@ -105,7 +116,7 @@ class AddEditGoalViewModel @Inject constructor(
             }
 
             is AddEditGoalEvent.DeleteMilestone -> {
-                milestonesListState.remove(_singleMilestoneState.value)
+                milestonesListState.remove(event.milestone)
             }
 
             is AddEditGoalEvent.OnChangeColor -> {

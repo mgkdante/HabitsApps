@@ -23,8 +23,8 @@ class GetGoalsWithMilestones(
                 }
                 is OrderType.Descending -> {
                     when(goalOrder) {
-                        is GoalOrder.Goal -> goals.sortedBy { it.goal.goal.lowercase() }
-                        is GoalOrder.Date -> goals.sortedBy { it.goal.dateCreated }
+                        is GoalOrder.Goal -> goals.sortedByDescending { it.goal.goal.lowercase() }
+                        is GoalOrder.Date -> goals.sortedByDescending { it.goal.dateCreated }
                     }
                 }
             }
