@@ -9,6 +9,8 @@ sealed class GoalsEvent {
     data class DeleteGoal(val goal: Goal, val milestone: List<Milestone>): GoalsEvent()
     data class ActionClick(val goal: Goal): GoalsEvent()
 
+    data class SetButtonToFalse(val goal: Goal): GoalsEvent()
+
 /*
     data class DeleteRecord(val clickRecord: ClickRecords): GoalsEvent()
 

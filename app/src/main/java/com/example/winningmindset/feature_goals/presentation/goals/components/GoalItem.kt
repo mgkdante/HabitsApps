@@ -98,7 +98,8 @@ fun GoalItem(
                 goal = goal.goal,
                 color = goal.color,
                 recordClick = recordClick,
-                isClicked = isClicked
+                isClicked = isClicked,
+                numberOfDaysClicked = goal.totalDays.toString()
             )
         }
         if (expanded) {
@@ -124,6 +125,7 @@ fun GoalItem(
 fun TopItem(
     goal: String,
     color: Long,
+    numberOfDaysClicked: String,
     modifier: Modifier = Modifier,
     recordClick: () -> Unit,
     isClicked: Boolean
@@ -135,7 +137,8 @@ fun TopItem(
             StreakIcon(
                 recordClick = recordClick,
                 clicked = isClicked,
-                color = color
+                color = color,
+                numberOfDays = numberOfDaysClicked
             )
         }
         Divider(color = Color(color))
@@ -158,6 +161,7 @@ fun ResolutionTitle(
 @Composable
 fun StreakIcon(
     modifier: Modifier = Modifier,
+    numberOfDays: String,
     recordClick: () -> Unit,
     clicked: Boolean,
     color: Long
@@ -165,21 +169,25 @@ fun StreakIcon(
     val interactionSource = remember {
         MutableInteractionSource()
     }
-
-    IconButton(
-        onClick = recordClick,
-        interactionSource = interactionSource
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            modifier = modifier.size(35.dp),
-            imageVector = Icons.Default.LocalFireDepartment,
-            contentDescription = "Record activity done",
-            tint = if (clicked) {
-                Color(color)
-            } else MaterialTheme.colorScheme.onSurface
-        )
+        Text(text = numberOfDays)
+        IconButton(
+            onClick = recordClick,
+            interactionSource = interactionSource
+        ) {
+            Icon(
+                modifier = Modifier.size(35.dp),
+                imageVector = Icons.Default.LocalFireDepartment,
+                contentDescription = "Record activity done",
+                tint = if (clicked) {
+                    Color(color)
+                } else MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
-
 
 }
 

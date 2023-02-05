@@ -50,12 +50,14 @@ class AddEditGoalViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private var currentGoalId: Int? = null
+    var currentGoalId: Int? = null
+        private set
 
 
     init {
         savedStateHandle.get<Int>("goalId")?.let { goalId ->
             if (goalId != -1) {
+                currentGoalId = goalId
                 viewModelScope.launch {
                     goalUseCases.getGoalWithMilestones(goalId)?.also { goalWithMilestones ->
                         currentGoalId = goalWithMilestones.goal.goalId
@@ -125,6 +127,19 @@ class AddEditGoalViewModel @Inject constructor(
                 )
             }
 
+            is AddEditGoalEvent.UpdateGoal -> {
+                viewModelScope.launch {
+                    goalUseCases.updateGoal(
+                        event.goal.copy(
+                            goal = goalTitle.value.text,
+                            typeOfMindset = typeOfMindset.value.text,
+                            color = goalColor.value.color
+                        )
+                    )
+                    _eventFlow.emit(UiEvent.SaveGoal)
+                }
+            }
+
             is AddEditGoalEvent.SaveGoal -> {
                 viewModelScope.launch {
                     try {
@@ -133,11 +148,7 @@ class AddEditGoalViewModel @Inject constructor(
                                 goal = goalTitle.value.text,
                                 typeOfMindset = typeOfMindset.value.text,
                                 dateCreated = System.currentTimeMillis(),
-                                color = goalColor.value.color,
-                                isClicked = false,
-                                lastClick = 0,
-                                totalDays = 0,
-                                goalId = currentGoalId
+                                color = goalColor.value.color
                             )
                         )
                         goalUseCases.addMilestoneList(
@@ -145,7 +156,7 @@ class AddEditGoalViewModel @Inject constructor(
                                 it.toMilestone()
                             }
                         )
-                        _eventFlow.emit(UiEvent.SaveNote)
+                        _eventFlow.emit(UiEvent.SaveGoal)
                     } catch (e: InvalidGoalException) {
                         _eventFlow.emit(
                             UiEvent.ShowSnackBar(
@@ -162,6 +173,7 @@ class AddEditGoalViewModel @Inject constructor(
 
     sealed class UiEvent {
         data class ShowSnackBar(val message: String) : UiEvent()
-        object SaveNote : UiEvent()
+        object SaveGoal : UiEvent()
+
     }
 }

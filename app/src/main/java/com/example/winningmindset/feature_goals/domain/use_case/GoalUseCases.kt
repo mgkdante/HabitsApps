@@ -6,7 +6,7 @@ data class GoalUseCases(
     val addGoal: AddGoal,
     val deleteGoal: DeleteGoal,
     val addMilestoneList: AddMilestoneList,
-    val addClick: AddClick,
+    val updateGoal: UpdateGoal,
     val getRecordsPerGoal: GetRecordsPerGoal,
     val insertRecord: InsertRecord,
     val deleteRecord: DeleteRecord

@@ -14,9 +14,9 @@ data class Goal(
     val typeOfMindset: String,
     val color: Long,
     val dateCreated: Long,
-    val isClicked: Boolean,
-    val totalDays: Int?,
-    val lastClick: Long?
+    val isClicked: Boolean = false,
+    val totalDays: Int = 0,
+    val lastClick: Long? = null
 ) {
     companion object GoalColor {
         val colors = listOf(

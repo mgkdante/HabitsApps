@@ -32,6 +32,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -45,6 +46,7 @@ import com.example.winningmindset.feature_goals.presentation.ResolutionTopAppBar
 import com.example.winningmindset.feature_goals.presentation.goals.components.GoalItem
 import com.example.winningmindset.feature_goals.presentation.goals.components.OrderSection
 import com.example.winningmindset.feature_goals.presentation.util.Screen
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -58,7 +60,6 @@ fun GoalsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
 
     Scaffold(
         topBar = {

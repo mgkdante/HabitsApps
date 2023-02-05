@@ -10,11 +10,16 @@ import com.example.winningmindset.feature_goals.domain.model.Milestone
 import com.example.winningmindset.feature_goals.domain.use_case.GoalUseCases
 import com.example.winningmindset.feature_goals.domain.util.GoalOrder
 import com.example.winningmindset.feature_goals.domain.util.OrderType
+import com.example.winningmindset.feature_goals.presentation.add_edit_goals.AddEditGoalViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.joda.time.DateTime
+import org.joda.time.Days
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,17 +39,18 @@ class GoalsViewModel @Inject constructor(
     init {
         getGoals(GoalOrder.Date(OrderType.Descending))
 
-/*        _state.value.goalsWithMilestones.forEach {
-            viewModelScope.launch {
-                setClickToFalse(it.goal)
-            }
-        }*/
+        state.value.goalsWithMilestones.forEach {
+            onEvent(GoalsEvent.SetButtonToFalse(it.goal))
+        }
+
     }
 
     fun onEvent(event: GoalsEvent) {
         when (event) {
             is GoalsEvent.Order -> {
-                if (state.value.goalOrder::class == event.goalOrder::class && state.value.goalOrder.orderType == event.goalOrder.orderType) {
+                if (state.value.goalOrder::class == event.goalOrder::class
+                    && state.value.goalOrder.orderType == event.goalOrder.orderType
+                ) {
                     return
                 }
                 getGoals(event.goalOrder)
@@ -73,10 +79,11 @@ class GoalsViewModel @Inject constructor(
 
             is GoalsEvent.ActionClick -> {
                 viewModelScope.launch {
-                    goalUseCases.addClick(
+                    goalUseCases.updateGoal(
                         event.goal.copy(
                             isClicked = !event.goal.isClicked,
-                            lastClick = System.currentTimeMillis()
+                            lastClick = System.currentTimeMillis(),
+                            totalDays = event.goal.totalDays.plus(1)
                         )
                     )
                     if (!event.goal.isClicked) {
@@ -87,9 +94,27 @@ class GoalsViewModel @Inject constructor(
                                 recordId = null
                             )
                         )
-                    } else {
+                    } else if (event.goal.isClicked) {
                         goalUseCases.deleteRecord(
                             event.goal
+                        )
+                        goalUseCases.updateGoal(
+                            event.goal.copy(
+                                totalDays = event.goal.totalDays.minus(1),
+                                isClicked = false
+                            )
+                        )
+                    }
+                }
+            }
+
+            is GoalsEvent.SetButtonToFalse -> {
+                viewModelScope.launch {
+                    if (dateDiff(event.goal) == 1) {
+                        goalUseCases.updateGoal(
+                            event.goal.copy(
+                                isClicked = false
+                            )
                         )
                     }
                 }
@@ -109,16 +134,12 @@ class GoalsViewModel @Inject constructor(
             }.launchIn(viewModelScope)
     }
 
-/*    private suspend fun setClickToFalse(goal: Goal) {
-        val days = Days.daysBetween(
+
+    private fun dateDiff(goal: Goal): Int {
+        return Days.daysBetween(
             DateTime(goal.lastClick).toLocalDate(),
             DateTime(System.currentTimeMillis()).toLocalDate()
         ).days
-        if (days == 1) {
-            goalUseCases.addClick(
-
-            )
-        }
-    }*/
+    }
 
 }

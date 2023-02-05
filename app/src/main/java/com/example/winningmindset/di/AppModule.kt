@@ -9,7 +9,7 @@ import com.example.winningmindset.feature_goals.data.repository.MilestoneReposit
 import com.example.winningmindset.feature_goals.domain.repository.ClickRecordsRepository
 import com.example.winningmindset.feature_goals.domain.repository.GoalRepository
 import com.example.winningmindset.feature_goals.domain.repository.MilestoneRepository
-import com.example.winningmindset.feature_goals.domain.use_case.AddClick
+import com.example.winningmindset.feature_goals.domain.use_case.UpdateGoal
 import com.example.winningmindset.feature_goals.domain.use_case.AddGoal
 import com.example.winningmindset.feature_goals.domain.use_case.AddMilestoneList
 import com.example.winningmindset.feature_goals.domain.use_case.DeleteGoal
@@ -71,7 +71,7 @@ object AppModule {
             addGoal = AddGoal(goalRepository),
             deleteGoal = DeleteGoal(goalRepository),
             addMilestoneList = AddMilestoneList(milestoneRepository),
-            addClick = AddClick(goalRepository),
+            updateGoal = UpdateGoal(goalRepository),
             getRecordsPerGoal = GetRecordsPerGoal(clickRecordsRepository),
             insertRecord = InsertRecord(clickRecordsRepository),
             deleteRecord = DeleteRecord(clickRecordsRepository)

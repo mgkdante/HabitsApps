@@ -22,7 +22,7 @@ interface GoalDao {
     @Query("SELECT * FROM goal WHERE goalId = :goalId")
     suspend fun getGoalById(goalId: Int): GoalWithMilestones?
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateGoal(goal: Goal)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -88,7 +88,7 @@ fun AddEditGoalScreen(
                     )
                 }
 
-                is AddEditGoalViewModel.UiEvent.SaveNote -> {
+                is AddEditGoalViewModel.UiEvent.SaveGoal -> {
                     navController.navigateUp()
                 }
             }
@@ -110,7 +110,9 @@ fun AddEditGoalScreen(
         DataEntryBody(
             milestoneList = viewModel.milestonesListState,
             milestoneState = viewModel.singleMilestoneState.value,
-            onSaveClick = { viewModel.onEvent(AddEditGoalEvent.SaveGoal) },
+            onSaveClick = {
+                viewModel.onEvent(AddEditGoalEvent.SaveGoal)
+            },
             modifier = Modifier.padding(padding),
         )
     }
