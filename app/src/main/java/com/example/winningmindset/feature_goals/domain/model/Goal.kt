@@ -16,7 +16,7 @@ data class Goal(
     val dateCreated: Long,
     val isClicked: Boolean,
     val totalDays: Int?,
-    val currentDay: Long?
+    val lastClick: Long?
 ){
     companion object GoalColor {
         val colors = listOf(

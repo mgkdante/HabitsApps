@@ -17,6 +17,9 @@ class GoalRepositoryImpl(
         return dao.getGoalById(goalId)
     }
 
+    override suspend fun updateGoal(goal: Goal) {
+        return dao.updateGoal(goal)
+    }
     override suspend fun insertGoal(goal: Goal) {
         return dao.insertGoal(goal)
     }

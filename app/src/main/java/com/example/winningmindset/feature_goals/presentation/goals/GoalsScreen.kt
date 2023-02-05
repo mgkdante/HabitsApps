@@ -1,5 +1,7 @@
 package com.example.winningmindset.feature_goals.presentation.goals
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -42,6 +44,7 @@ import com.example.winningmindset.feature_goals.presentation.goals.components.Or
 import com.example.winningmindset.feature_goals.presentation.util.Screen
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GoalsScreen(
@@ -91,7 +94,7 @@ fun GoalsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.Top
-                    ){
+                    ) {
                         AnimatedVisibility(
                             visible = state.isOrderSectionVisible,
                             enter = fadeIn() + slideInVertically(),
@@ -140,11 +143,13 @@ fun GoalsScreen(
                                 }
                             }
                         },
-                        recordClick = { /*Do NOTHING FOR THE MOMENT*/ },
+                        recordClick = {
+                            viewModel.onEvent(GoalsEvent.ActionClick(goalWithMilestones.goal))
+                        },
                         onClickEdit = {
                             navController.navigate(
                                 Screen.AddEditScreen.route +
-                                        "?goalId=${goalWithMilestones.goal.goalId}&goalColor=${goalWithMilestones.goal.color}"
+                                        "?goalId=${goalWithMilestones.goal.goalId}"
                             )
                         }
                     )
