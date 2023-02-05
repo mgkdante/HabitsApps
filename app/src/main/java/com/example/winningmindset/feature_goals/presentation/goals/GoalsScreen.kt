@@ -1,10 +1,13 @@
 package com.example.winningmindset.feature_goals.presentation.goals
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Sort
@@ -34,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.winningmindset.feature_goals.presentation.ResolutionTopAppBar
@@ -42,6 +47,7 @@ import com.example.winningmindset.feature_goals.presentation.goals.components.Or
 import com.example.winningmindset.feature_goals.presentation.util.Screen
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GoalsScreen(
@@ -65,7 +71,18 @@ fun GoalsScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate(Screen.AddEditScreen.route) }) {
+            FloatingActionButton(
+                onClick = { navController.navigate(Screen.AddEditScreen.route) },
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(15.dp),
+                modifier = Modifier
+                    .border(
+                        2.dp,
+                        MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(15.dp)
+                    )
+            ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Goal")
             }
         }
@@ -91,7 +108,7 @@ fun GoalsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.Top
-                    ){
+                    ) {
                         AnimatedVisibility(
                             visible = state.isOrderSectionVisible,
                             enter = fadeIn() + slideInVertically(),
@@ -140,11 +157,13 @@ fun GoalsScreen(
                                 }
                             }
                         },
-                        recordClick = { /*Do NOTHING FOR THE MOMENT*/ },
+                        recordClick = {
+                            viewModel.onEvent(GoalsEvent.ActionClick(goalWithMilestones.goal))
+                        },
                         onClickEdit = {
                             navController.navigate(
                                 Screen.AddEditScreen.route +
-                                        "?goalId=${goalWithMilestones.goal.goalId}&goalColor=${goalWithMilestones.goal.color}"
+                                        "?goalId=${goalWithMilestones.goal.goalId}"
                             )
                         }
                     )

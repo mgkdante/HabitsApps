@@ -135,7 +135,7 @@ class AddEditGoalViewModel @Inject constructor(
                                 dateCreated = System.currentTimeMillis(),
                                 color = goalColor.value.color,
                                 isClicked = false,
-                                currentDay = 0,
+                                lastClick = 0,
                                 totalDays = 0,
                                 goalId = currentGoalId
                             )

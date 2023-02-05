@@ -10,6 +10,8 @@ interface GoalRepository {
 
     suspend fun getGoalById(goalId: Int): GoalWithMilestones?
 
+    suspend fun updateGoal(goal: Goal)
+
     suspend fun insertGoal(goal: Goal)
 
     suspend fun deleteGoal(goal: Goal)

@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.example.winningmindset.feature_goals.domain.model.Goal
 import com.example.winningmindset.feature_goals.domain.model.GoalWithMilestones
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +21,9 @@ interface GoalDao {
 
     @Query("SELECT * FROM goal WHERE goalId = :goalId")
     suspend fun getGoalById(goalId: Int): GoalWithMilestones?
+
+    @Update
+    suspend fun updateGoal(goal: Goal)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGoal(goal: Goal)
