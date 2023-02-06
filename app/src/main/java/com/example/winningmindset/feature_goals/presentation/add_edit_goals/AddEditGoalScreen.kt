@@ -111,7 +111,7 @@ fun AddEditGoalScreen(
             milestoneList = viewModel.milestonesListState,
             milestoneState = viewModel.singleMilestoneState.value,
             onSaveClick = {
-                viewModel.onEvent(AddEditGoalEvent.SaveGoal)
+                 viewModel.onEvent(AddEditGoalEvent.SaveGoal)
             },
             modifier = Modifier.padding(padding),
         )

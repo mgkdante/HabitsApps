@@ -147,7 +147,6 @@ class AddEditGoalViewModel @Inject constructor(
                             Goal(
                                 goal = goalTitle.value.text,
                                 typeOfMindset = typeOfMindset.value.text,
-                                dateCreated = System.currentTimeMillis(),
                                 color = goalColor.value.color
                             )
                         )
@@ -166,7 +165,6 @@ class AddEditGoalViewModel @Inject constructor(
                     }
                 }
             }
-
         }
     }
 

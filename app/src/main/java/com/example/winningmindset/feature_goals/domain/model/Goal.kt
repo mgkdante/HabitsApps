@@ -13,7 +13,7 @@ data class Goal(
     val goal: String,
     val typeOfMindset: String,
     val color: Long,
-    val dateCreated: Long,
+    val dateCreated: Long = System.currentTimeMillis(),
     val isClicked: Boolean = false,
     val totalDays: Int = 0,
     val lastClick: Long? = null

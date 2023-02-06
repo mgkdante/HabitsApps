@@ -11,7 +11,8 @@ import androidx.room.PrimaryKey
         entity = Goal::class,
         parentColumns = ["goal"],
         childColumns = ["parentGoal"],
-        onDelete = ForeignKey.CASCADE
+        onDelete = ForeignKey.CASCADE,
+        onUpdate = ForeignKey.CASCADE
     )
     ],
     indices = [Index(value = ["milestoneId"], unique = true)],

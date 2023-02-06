@@ -8,7 +8,7 @@ import com.example.winningmindset.feature_goals.domain.model.Milestone
 
 @Database(
     entities = [Goal::class, Milestone::class, ClickRecords::class],
-    version = 2,
+    version = 1,
     exportSchema = false
 )
 abstract class GoalDatabase: RoomDatabase() {
