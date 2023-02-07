@@ -162,8 +162,7 @@ fun DataEntryForm(
     milestoneList: List<MilestoneState>,
     viewModel: AddEditGoalViewModel = hiltViewModel()
 ) {
-    val goalTitle = viewModel.goalTitle
-    val typeOfMindset = viewModel.typeOfMindset
+    val goal = viewModel.goal
     val milestone = viewModel.singleMilestoneState
 
     Column(
@@ -173,7 +172,7 @@ fun DataEntryForm(
         verticalArrangement = Arrangement.Top
     ) {
         OutlinedTextField(
-            value = goalTitle.value.text,
+            value = goal.value.goal,
             label = { Text(text = "What is your goal?") },
             onValueChange = { viewModel.onEvent(AddEditGoalEvent.EnterGoal(it)) },
             placeholder = {
@@ -193,7 +192,7 @@ fun DataEntryForm(
         )
         Spacer(modifier = modifier.height(16.dp))
         OutlinedTextField(
-            value = typeOfMindset.value.text,
+            value = goal.value.typeOfMindset,
             label = { Text(text = "What type of person can accomplish this goal?") },
             onValueChange = { viewModel.onEvent(AddEditGoalEvent.EnterTypeOfMindset(it)) },
             placeholder = {

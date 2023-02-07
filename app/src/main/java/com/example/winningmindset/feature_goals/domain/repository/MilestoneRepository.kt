@@ -9,5 +9,5 @@ interface MilestoneRepository {
 
     suspend fun updateMilestone(milestone: Milestone)
 
-    suspend fun deleteMilestone(milestone: Milestone)
+    suspend fun deleteMilestone(parentGoal: String)
 }

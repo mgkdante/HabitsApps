@@ -23,20 +23,11 @@ class AddEditGoalViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _goalTitle = mutableStateOf(
-        GoalTextFieldState(
-            hint = "Enter Goal Title"
-        )
+    private val _goal = mutableStateOf(
+        GoalState()
     )
-    val goalTitle: State<GoalTextFieldState> = _goalTitle
+    val goal: State<GoalState> = _goal
 
-
-    private val _typeOfMindset = mutableStateOf(
-        GoalTextFieldState(
-            hint = "Enter the mindset needed for this goal"
-        )
-    )
-    val typeOfMindset: State<GoalTextFieldState> = _typeOfMindset
 
     private val _singleMilestoneState = mutableStateOf(MilestoneState())
     val singleMilestoneState = _singleMilestoneState
@@ -61,15 +52,12 @@ class AddEditGoalViewModel @Inject constructor(
                 viewModelScope.launch {
                     goalUseCases.getGoalWithMilestones(goalId)?.also { goalWithMilestones ->
                         currentGoalId = goalWithMilestones.goal.goalId
-                        _goalTitle.value = goalTitle.value.copy(
-                            text = goalWithMilestones.goal.goal
-                        )
-                        _typeOfMindset.value = typeOfMindset.value.copy(
-                            text = goalWithMilestones.goal.typeOfMindset
-                        )
-                        _goalColor.value = goalColor.value.copy(
+                        _goal.value = goal.value.copy(
+                            goal = goalWithMilestones.goal.goal,
+                            typeOfMindset = goalWithMilestones.goal.typeOfMindset,
                             color = goalWithMilestones.goal.color
                         )
+
                         goalWithMilestones.milestones.forEach {
                             milestonesListState.add(
                                 singleMilestoneState.value.copy(
@@ -91,14 +79,14 @@ class AddEditGoalViewModel @Inject constructor(
     fun onEvent(event: AddEditGoalEvent) {
         when (event) {
             is AddEditGoalEvent.EnterGoal -> {
-                _goalTitle.value = goalTitle.value.copy(
-                    text = event.value
+                _goal.value = goal.value.copy(
+                    goal = event.value
                 )
             }
 
             is AddEditGoalEvent.EnterTypeOfMindset -> {
-                _typeOfMindset.value = typeOfMindset.value.copy(
-                    text = event.value
+                _goal.value = goal.value.copy(
+                    typeOfMindset = event.value
                 )
             }
 
@@ -112,7 +100,7 @@ class AddEditGoalViewModel @Inject constructor(
             is AddEditGoalEvent.EnterMilestone -> {
                 _singleMilestoneState.value = singleMilestoneState.value.copy(
                     milestone = event.milestone,
-                    parentGoal = goalTitle.value.text,
+                    parentGoal = goal.value.goal,
                     dateCreated = System.currentTimeMillis()
                 )
             }
@@ -131,8 +119,8 @@ class AddEditGoalViewModel @Inject constructor(
                 viewModelScope.launch {
                     goalUseCases.updateGoal(
                         event.goal.copy(
-                            goal = goalTitle.value.text,
-                            typeOfMindset = typeOfMindset.value.text,
+                            goal = goal.value.goal,
+                            typeOfMindset = goal.value.typeOfMindset,
                             color = goalColor.value.color
                         )
                     )
@@ -143,10 +131,19 @@ class AddEditGoalViewModel @Inject constructor(
             is AddEditGoalEvent.SaveGoal -> {
                 viewModelScope.launch {
                     try {
-                        goalUseCases.addGoal(
+                        if (currentGoalId != null) {
+                            goalUseCases.updateGoal(
+                                Goal(
+                                    goalId = currentGoalId,
+                                    goal = goal.value.goal,
+                                    typeOfMindset = goal.value.typeOfMindset,
+                                    color = goalColor.value.color,
+                                )
+                            )
+                        } else goalUseCases.addGoal(
                             Goal(
-                                goal = goalTitle.value.text,
-                                typeOfMindset = typeOfMindset.value.text,
+                                goal = goal.value.goal,
+                                typeOfMindset = goal.value.typeOfMindset,
                                 color = goalColor.value.color
                             )
                         )
@@ -167,7 +164,6 @@ class AddEditGoalViewModel @Inject constructor(
             }
         }
     }
-
 
     sealed class UiEvent {
         data class ShowSnackBar(val message: String) : UiEvent()

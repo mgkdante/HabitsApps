@@ -20,7 +20,7 @@ interface MilestoneDao {
     @Update
     suspend fun updateMilestone(milestone: Milestone)
 
-    @Delete
-    suspend fun deleteMilestone(milestone: Milestone)
+    @Query("DELETE FROM milestone WHERE parentGoal = :parentGoal")
+    suspend fun deleteMilestone(parentGoal: String)
 
 }
