@@ -6,8 +6,8 @@ import androidx.room.Relation
 data class GoalWithMilestones(
     @Embedded val goal: Goal,
     @Relation(
-        parentColumn = "goal",
-        entityColumn = "parentGoal"
+        parentColumn = "goalId",
+        entityColumn = "parentId"
     )
     val milestones: List<Milestone>
 )

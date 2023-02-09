@@ -16,7 +16,9 @@ class MilestoneRepositoryImpl(
         return dao.updateMilestone(milestone)
     }
 
-    override suspend fun deleteMilestone(parentGoal: String) {
-        return dao.deleteMilestone(parentGoal)
+    override suspend fun deleteMilestone(parentId: Int) {
+        return dao.deleteMilestone(parentId)
     }
+
+
 }

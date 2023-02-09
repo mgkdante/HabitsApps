@@ -4,7 +4,7 @@ import com.example.winningmindset.feature_goals.domain.model.Milestone
 
 data class MilestoneState(
     val milestoneId: Int = 0,
-    val parentGoal: String = "",
+    val parentId: Int = 0,
     val milestone: String = "",
     val dateCreated: Long = 0,
     val totalDay: Int = 0,
@@ -13,7 +13,7 @@ data class MilestoneState(
 
 fun MilestoneState.toMilestone(): Milestone = Milestone(
     milestoneId = milestoneId,
-    parentGoal = parentGoal,
+    parentId = parentId,
     milestone = milestone,
     dateCreated = dateCreated
 )

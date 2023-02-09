@@ -1,5 +1,7 @@
 package com.example.winningmindset.feature_goals.presentation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,6 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.winningmindset.feature_goals.presentation.util.AppNavHost
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppContent(
     navController: NavHostController = rememberNavController()

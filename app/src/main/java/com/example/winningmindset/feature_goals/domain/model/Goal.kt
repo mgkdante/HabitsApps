@@ -6,17 +6,17 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.lang.Exception
 
-@Entity(tableName = "goal", indices = [Index(value = ["goal"], unique = true)])
+@Entity(tableName = "goal", indices = [Index(value = ["goalId"], unique = true)])
 data class Goal(
     @PrimaryKey(autoGenerate = true)
     val goalId: Int? = null,
     val goal: String,
     val typeOfMindset: String,
     val color: Long,
-    val dateCreated: Long = System.currentTimeMillis(),
-    val isClicked: Boolean = false,
-    val totalDays: Int = 0,
-    val lastClick: Long? = null
+    val dateCreated: Long,
+    val isClicked: Boolean,
+    val totalDays: Int,
+    val lastClick: Long,
 ) {
     companion object GoalColor {
         val colors = listOf(

@@ -9,9 +9,10 @@ import androidx.room.PrimaryKey
     tableName = "click_records",
     foreignKeys = [ForeignKey(
         entity = Goal::class,
-        parentColumns = ["goal"],
-        childColumns = ["parentGoal"],
-        onDelete = ForeignKey.CASCADE
+        parentColumns = ["goalId"],
+        childColumns = ["parentId"],
+        onDelete = ForeignKey.CASCADE,
+        onUpdate = ForeignKey.CASCADE
     )
     ],
     indices = [Index(value = ["recordId"], unique = true)]
@@ -19,6 +20,6 @@ import androidx.room.PrimaryKey
 data class ClickRecords(
     @PrimaryKey(autoGenerate = true)
     val recordId: Int? = null,
-    val parentGoal: String,
+    val parentId: Int,
     val currentDay: Long,
 )

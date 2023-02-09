@@ -10,8 +10,8 @@ class ClickRecordRepositoryImpl(
     private val dao: ClickRecordsDao
 ) : ClickRecordsRepository {
 
-    override fun getRecordPerGoal(parentGoal: String): Flow<List<ClickRecords>> {
-        return dao.getRecordsPerGoal(parentGoal)
+    override fun getRecordPerGoal(parentId: Int): Flow<List<ClickRecords>> {
+        return dao.getRecordsPerGoal(parentId)
     }
 
     override suspend fun insertRecord(clickRecord: ClickRecords) {
@@ -19,7 +19,7 @@ class ClickRecordRepositoryImpl(
     }
 
     override suspend fun deleteRecord(goal: Goal) {
-        dao.deleteRecord(goal.goal)
+        goal.goalId?.let { dao.deleteRecord(it) }
     }
 
 }

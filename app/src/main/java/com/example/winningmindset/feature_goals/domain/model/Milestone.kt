@@ -9,8 +9,8 @@ import androidx.room.PrimaryKey
     tableName = "milestone",
     foreignKeys = [ForeignKey(
         entity = Goal::class,
-        parentColumns = ["goal"],
-        childColumns = ["parentGoal"],
+        parentColumns = ["goalId"],
+        childColumns = ["parentId"],
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.CASCADE
     )
@@ -20,7 +20,7 @@ import androidx.room.PrimaryKey
 data class Milestone(
     @PrimaryKey(autoGenerate = true)
     val milestoneId: Int,
-    val parentGoal: String,
+    var parentId: Int,
     val milestone: String,
     val dateCreated: Long
 )

@@ -10,7 +10,7 @@ import com.example.winningmindset.feature_goals.domain.repository.ClickRecordsRe
 import com.example.winningmindset.feature_goals.domain.repository.GoalRepository
 import com.example.winningmindset.feature_goals.domain.repository.MilestoneRepository
 import com.example.winningmindset.feature_goals.domain.use_case.UpdateGoal
-import com.example.winningmindset.feature_goals.domain.use_case.AddGoal
+import com.example.winningmindset.feature_goals.domain.use_case.AddGoalWithMilestones
 import com.example.winningmindset.feature_goals.domain.use_case.AddMilestoneList
 import com.example.winningmindset.feature_goals.domain.use_case.DeleteGoal
 import com.example.winningmindset.feature_goals.domain.use_case.DeleteRecord
@@ -68,13 +68,14 @@ object AppModule {
         return GoalUseCases(
             getGoalsWithMilestones = GetGoalsWithMilestones(goalRepository),
             getGoalWithMilestones = GetGoalWithMileStones(goalRepository),
-            addGoal = AddGoal(goalRepository),
+            addGoalWithMilestones = AddGoalWithMilestones(goalRepository),
             deleteGoal = DeleteGoal(goalRepository),
             addMilestoneList = AddMilestoneList(milestoneRepository),
             updateGoal = UpdateGoal(goalRepository),
             getRecordsPerGoal = GetRecordsPerGoal(clickRecordsRepository),
             insertRecord = InsertRecord(clickRecordsRepository),
-            deleteRecord = DeleteRecord(clickRecordsRepository)
+            deleteRecord = DeleteRecord(clickRecordsRepository),
+            //updateGoalAndMilestones = UpdateGoalAndMilestones(goalRepository)
         )
     }
 

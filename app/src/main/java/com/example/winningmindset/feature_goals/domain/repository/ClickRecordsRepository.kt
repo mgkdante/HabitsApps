@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ClickRecordsRepository {
 
-    fun getRecordPerGoal(parentGoal: String): Flow<List<ClickRecords>>
+    fun getRecordPerGoal(parentId: Int): Flow<List<ClickRecords>>
 
     suspend fun insertRecord(clickRecord: ClickRecords)
 

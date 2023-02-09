@@ -10,11 +10,8 @@ import com.example.winningmindset.feature_goals.domain.model.Milestone
 import com.example.winningmindset.feature_goals.domain.use_case.GoalUseCases
 import com.example.winningmindset.feature_goals.domain.util.GoalOrder
 import com.example.winningmindset.feature_goals.domain.util.OrderType
-import com.example.winningmindset.feature_goals.presentation.add_edit_goals.AddEditGoalViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -66,8 +63,7 @@ class GoalsViewModel @Inject constructor(
 
             is GoalsEvent.RestoreGoal -> {
                 viewModelScope.launch {
-                    goalUseCases.addGoal(recentDeletedGoal ?: return@launch)
-                    goalUseCases.addMilestoneList(recentlyDeletedMilestones)
+                    goalUseCases.addGoalWithMilestones(recentDeletedGoal ?: return@launch, recentlyDeletedMilestones)
                 }
             }
 
@@ -87,13 +83,17 @@ class GoalsViewModel @Inject constructor(
                         )
                     )
                     if (!event.goal.isClicked) {
-                        goalUseCases.insertRecord(
+                        event.goal.goalId?.let {
                             ClickRecords(
-                                parentGoal = event.goal.goal,
+                                parentId = it,
                                 currentDay = System.currentTimeMillis(),
                                 recordId = null
                             )
-                        )
+                        }?.let {
+                            goalUseCases.insertRecord(
+                                it
+                            )
+                        }
                     } else if (event.goal.isClicked) {
                         goalUseCases.deleteRecord(
                             event.goal

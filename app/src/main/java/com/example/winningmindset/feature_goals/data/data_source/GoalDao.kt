@@ -9,6 +9,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.example.winningmindset.feature_goals.domain.model.Goal
 import com.example.winningmindset.feature_goals.domain.model.GoalWithMilestones
+import com.example.winningmindset.feature_goals.domain.model.Milestone
 import kotlinx.coroutines.flow.Flow
 
 
@@ -22,12 +23,25 @@ interface GoalDao {
     @Query("SELECT * FROM goal WHERE goalId = :goalId")
     suspend fun getGoalById(goalId: Int): GoalWithMilestones?
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
+    @Update
     suspend fun updateGoal(goal: Goal)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertGoal(goal: Goal)
+    suspend fun insertGoal(goal: Goal): Long
 
     @Delete
     suspend fun deleteGoal(goal: Goal)
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMilestones(milestoneList: List<Milestone>)
+
+    @Transaction
+    suspend fun insertGoalAndMilestones(goal: Goal, milestones: List<Milestone>) {
+        val goalId = insertGoal(goal)
+        for (milestone in milestones) {
+            milestone.parentId = goalId.toInt()
+            insertMilestones(listOf(milestone))
+        }
+    }
 }

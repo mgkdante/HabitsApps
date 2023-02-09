@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 class GetRecordsPerGoal(
     private val repository: ClickRecordsRepository
 ) {
-    operator fun invoke(parentGoal: String): Flow<List<ClickRecords>> {
-       return repository.getRecordPerGoal(parentGoal)
+    operator fun invoke(parentId: Int): Flow<List<ClickRecords>> {
+       return repository.getRecordPerGoal(parentId)
     }
 }

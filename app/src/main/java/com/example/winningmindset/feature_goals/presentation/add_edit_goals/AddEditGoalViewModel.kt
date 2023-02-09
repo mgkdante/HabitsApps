@@ -3,11 +3,9 @@ package com.example.winningmindset.feature_goals.presentation.add_edit_goals
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.winningmindset.feature_goals.domain.model.Goal
 import com.example.winningmindset.feature_goals.domain.model.InvalidGoalException
 import com.example.winningmindset.feature_goals.domain.use_case.GoalUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,8 +33,6 @@ class AddEditGoalViewModel @Inject constructor(
     var milestonesListState = mutableStateListOf<MilestoneState>()
         private set
 
-    private val _goalColor = mutableStateOf(GoalColorState(Goal.colors[0].toArgb().toLong()))
-    val goalColor: State<GoalColorState> = _goalColor
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -55,16 +51,19 @@ class AddEditGoalViewModel @Inject constructor(
                         _goal.value = goal.value.copy(
                             goal = goalWithMilestones.goal.goal,
                             typeOfMindset = goalWithMilestones.goal.typeOfMindset,
-                            color = goalWithMilestones.goal.color
+                            color = goalWithMilestones.goal.color,
+                            lastClick = goalWithMilestones.goal.lastClick,
+                            dateCreated = goalWithMilestones.goal.dateCreated,
+                            totalDays = goalWithMilestones.goal.totalDays,
+                            isClicked = goalWithMilestones.goal.isClicked,
+                            goalId = currentGoalId
                         )
-
-                        goalWithMilestones.milestones.forEach {
+                        goalWithMilestones.milestones.forEach { milestone ->
                             milestonesListState.add(
                                 singleMilestoneState.value.copy(
-                                    milestone = it.milestone,
-                                    milestoneId = it.milestoneId,
-                                    parentGoal = it.parentGoal,
-                                    dateCreated = it.dateCreated
+                                    milestone = milestone.milestone,
+                                    milestoneId = milestone.milestoneId,
+                                    dateCreated = milestone.dateCreated
                                 )
                             )
                         }
@@ -74,7 +73,6 @@ class AddEditGoalViewModel @Inject constructor(
             }
         }
     }
-
 
     fun onEvent(event: AddEditGoalEvent) {
         when (event) {
@@ -100,7 +98,6 @@ class AddEditGoalViewModel @Inject constructor(
             is AddEditGoalEvent.EnterMilestone -> {
                 _singleMilestoneState.value = singleMilestoneState.value.copy(
                     milestone = event.milestone,
-                    parentGoal = goal.value.goal,
                     dateCreated = System.currentTimeMillis()
                 )
             }
@@ -110,44 +107,25 @@ class AddEditGoalViewModel @Inject constructor(
             }
 
             is AddEditGoalEvent.OnChangeColor -> {
-                _goalColor.value = goalColor.value.copy(
+                _goal.value = goal.value.copy(
                     color = event.color
                 )
-            }
-
-            is AddEditGoalEvent.UpdateGoal -> {
-                viewModelScope.launch {
-                    goalUseCases.updateGoal(
-                        event.goal.copy(
-                            goal = goal.value.goal,
-                            typeOfMindset = goal.value.typeOfMindset,
-                            color = goalColor.value.color
-                        )
-                    )
-                    _eventFlow.emit(UiEvent.SaveGoal)
-                }
             }
 
             is AddEditGoalEvent.SaveGoal -> {
                 viewModelScope.launch {
                     try {
-                        if (currentGoalId != null) {
-                            goalUseCases.updateGoal(
-                                Goal(
-                                    goalId = currentGoalId,
-                                    goal = goal.value.goal,
-                                    typeOfMindset = goal.value.typeOfMindset,
-                                    color = goalColor.value.color,
-                                )
-                            )
-                        } else goalUseCases.addGoal(
-                            Goal(
+                        goalUseCases.addGoalWithMilestones(
+                            goal.value.copy(
                                 goal = goal.value.goal,
                                 typeOfMindset = goal.value.typeOfMindset,
-                                color = goalColor.value.color
-                            )
-                        )
-                        goalUseCases.addMilestoneList(
+                                color = goal.value.color,
+                                isClicked = goal.value.isClicked,
+                                totalDays = goal.value.totalDays,
+                                dateCreated = goal.value.dateCreated,
+                                lastClick = goal.value.lastClick,
+                                goalId = currentGoalId
+                            ).toGoal(),
                             milestonesListState.map {
                                 it.toMilestone()
                             }

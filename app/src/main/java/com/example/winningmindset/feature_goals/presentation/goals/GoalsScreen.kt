@@ -134,38 +134,40 @@ fun GoalsScreen(
                     }
                 }
                 items(state.goalsWithMilestones) { goalWithMilestones ->
-                    GoalItem(
-                        goal = goalWithMilestones.goal,
-                        isClicked = goalWithMilestones.goal.isClicked,
-                        milestone = goalWithMilestones.milestones,
-                        onDelete = {
-                            viewModel.onEvent(
-                                GoalsEvent.DeleteGoal(
-                                    goalWithMilestones.goal,
-                                    goalWithMilestones.milestones
+                    goalWithMilestones.goal.isClicked.let {
+                        GoalItem(
+                            goal = goalWithMilestones.goal,
+                            isClicked = it,
+                            milestone = goalWithMilestones.milestones,
+                            onDelete = {
+                                viewModel.onEvent(
+                                    GoalsEvent.DeleteGoal(
+                                        goalWithMilestones.goal,
+                                        goalWithMilestones.milestones
+                                    )
                                 )
-                            )
-                            scope.launch {
-                                val result = snackbarHostState.showSnackbar(
-                                    message = "Note Deleted",
-                                    actionLabel = "Undo",
-                                    duration = SnackbarDuration.Short
-                                )
-                                if (result == SnackbarResult.ActionPerformed) {
-                                    viewModel.onEvent(GoalsEvent.RestoreGoal)
+                                scope.launch {
+                                    val result = snackbarHostState.showSnackbar(
+                                        message = "Note Deleted",
+                                        actionLabel = "Undo",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                    if (result == SnackbarResult.ActionPerformed) {
+                                        viewModel.onEvent(GoalsEvent.RestoreGoal)
+                                    }
                                 }
+                            },
+                            recordClick = {
+                                viewModel.onEvent(GoalsEvent.ActionClick(goalWithMilestones.goal))
+                            },
+                            onClickEdit = {
+                                navController.navigate(
+                                    Screen.AddEditScreen.route +
+                                            "?goalId=${goalWithMilestones.goal.goalId}"
+                                )
                             }
-                        },
-                        recordClick = {
-                            viewModel.onEvent(GoalsEvent.ActionClick(goalWithMilestones.goal))
-                        },
-                        onClickEdit = {
-                            navController.navigate(
-                                Screen.AddEditScreen.route +
-                                        "?goalId=${goalWithMilestones.goal.goalId}"
-                            )
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }

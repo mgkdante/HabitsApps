@@ -111,7 +111,7 @@ fun AddEditGoalScreen(
             milestoneList = viewModel.milestonesListState,
             milestoneState = viewModel.singleMilestoneState.value,
             onSaveClick = {
-                 viewModel.onEvent(AddEditGoalEvent.SaveGoal)
+                viewModel.onEvent(AddEditGoalEvent.SaveGoal)
             },
             modifier = Modifier.padding(padding),
         )
@@ -171,45 +171,46 @@ fun DataEntryForm(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        OutlinedTextField(
-            value = goal.value.goal,
-            label = { Text(text = "What is your goal?") },
-            onValueChange = { viewModel.onEvent(AddEditGoalEvent.EnterGoal(it)) },
-            placeholder = {
-                Text(
-                    text = "Ex: Run a marathon, start a business, eat healthier, learn a new language, etc",
-                    style = MaterialTheme.typography.bodyMedium
+            OutlinedTextField(
+                value = goal.value.goal,
+                label = { Text(text = "What is your goal?") },
+                onValueChange = { viewModel.onEvent(AddEditGoalEvent.EnterGoal(it)) },
+                placeholder = {
+                    Text(
+                        text = "Ex: Run a marathon, start a business, eat healthier, learn a new language, etc",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 90.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = currentUiColor,
+                    focusedLabelColor = currentUiColor
                 )
-            },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 90.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = currentUiColor,
-                focusedLabelColor = currentUiColor
             )
-        )
+        }
         Spacer(modifier = modifier.height(16.dp))
-        OutlinedTextField(
-            value = goal.value.typeOfMindset,
-            label = { Text(text = "What type of person can accomplish this goal?") },
-            onValueChange = { viewModel.onEvent(AddEditGoalEvent.EnterTypeOfMindset(it)) },
-            placeholder = {
-                Text(
-                    text = "An organized person, an athletic person, a hardworking person, etc",
-                    style = MaterialTheme.typography.bodyMedium
+            OutlinedTextField(
+                value = goal.value.typeOfMindset,
+                label = { Text(text = "What type of person can accomplish this goal?") },
+                onValueChange = { viewModel.onEvent(AddEditGoalEvent.EnterTypeOfMindset(it)) },
+                placeholder = {
+                    Text(
+                        text = "An organized person, an athletic person, a hardworking person, etc",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                },
+                singleLine = false,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 90.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = currentUiColor,
+                    focusedLabelColor = currentUiColor
                 )
-            },
-            singleLine = false,
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 90.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = currentUiColor,
-                focusedLabelColor = currentUiColor
             )
-        )
         Spacer(modifier = modifier.height(16.dp))
         EnterMilestone(
             milestone = milestone.value.milestone,
@@ -231,7 +232,6 @@ fun DataEntryForm(
             }
         )
     }
-}
 
 @Composable
 fun MilestoneList(
