@@ -11,6 +11,7 @@ data class GoalState(
     val lastClick: Long = 0,
     val totalDays: Int = 0,
     val dateCreated:Long = System.currentTimeMillis(),
+    val streakInDays: Int = 0,
     val goalId: Int? = null
 )
 
@@ -23,5 +24,6 @@ fun GoalState.toGoal(): Goal = Goal(
     lastClick = lastClick,
     totalDays = totalDays,
     dateCreated = dateCreated,
+    streakInDays = streakInDays,
     goalId = goalId
 )

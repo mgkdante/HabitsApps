@@ -37,8 +37,7 @@ class AddEditGoalViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    var currentGoalId: Int? = null
-        private set
+    private var currentGoalId: Int? = null
 
 
     init {
@@ -56,6 +55,7 @@ class AddEditGoalViewModel @Inject constructor(
                             dateCreated = goalWithMilestones.goal.dateCreated,
                             totalDays = goalWithMilestones.goal.totalDays,
                             isClicked = goalWithMilestones.goal.isClicked,
+                            streakInDays = goalWithMilestones.goal.streakInDays,
                             goalId = currentGoalId
                         )
                         goalWithMilestones.milestones.forEach { milestone ->
@@ -67,7 +67,6 @@ class AddEditGoalViewModel @Inject constructor(
                                 )
                             )
                         }
-
                     }
                 }
             }
@@ -124,6 +123,7 @@ class AddEditGoalViewModel @Inject constructor(
                                 totalDays = goal.value.totalDays,
                                 dateCreated = goal.value.dateCreated,
                                 lastClick = goal.value.lastClick,
+                                streakInDays = goal.value.streakInDays,
                                 goalId = currentGoalId
                             ).toGoal(),
                             milestonesListState.map {

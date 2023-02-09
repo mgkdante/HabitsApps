@@ -208,8 +208,8 @@ fun DataEntryForm(
             .fillMaxWidth()
             .heightIn(min = 90.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color(viewModel.goal.value.color),
-            focusedLabelColor = Color(viewModel.goal.value.color)
+            focusedBorderColor = Color(currentColor),
+            focusedLabelColor = Color(currentColor)
         )
     )
     Spacer(modifier = modifier.height(16.dp))
@@ -232,7 +232,7 @@ fun DataEntryForm(
         onColorSelected = {
             viewModel.onEvent(AddEditGoalEvent.OnChangeColor(it.toArgb().toLong()))
         },
-        color = viewModel.goal.value.color
+        color = currentColor
     )
 }
 
@@ -351,8 +351,6 @@ fun ColorButton(
         mutableStateOf(false)
     }
 
-    var currentlySelected by remember { mutableStateOf(Color(color)) }
-
     OutlinedButton(
         modifier = Modifier
             .fillMaxWidth()
@@ -382,7 +380,7 @@ fun ColorButton(
                         MaterialTheme.colorScheme.onBackground,
                         RoundedCornerShape(20)
                     )
-                    .background(color = currentlySelected)
+                    .background(color = Color(color))
             ) {}
         }
     }
@@ -390,13 +388,11 @@ fun ColorButton(
         ColorDialog(
             onDismiss = { isColorPickerOpen = false },
             onColorSelected = {
-                currentlySelected = it
                 onColorSelected(it)
             },
             colorList = colorList,
-            color = color
         )
-    } else onColorSelected(currentlySelected)
+    } else onColorSelected(Color(color))
 }
 
 
@@ -405,7 +401,6 @@ private fun ColorDialog(
     colorList: List<Color>,
     onDismiss: () -> Unit,
     onColorSelected: (Color) -> Unit, // when the save button is clicked
-    color: Long
 ) {
     val gridState = rememberLazyGridState()
 
