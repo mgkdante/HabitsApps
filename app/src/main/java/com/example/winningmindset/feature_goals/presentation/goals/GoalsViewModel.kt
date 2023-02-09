@@ -37,7 +37,9 @@ class GoalsViewModel @Inject constructor(
         getGoals(GoalOrder.Date(OrderType.Descending))
 
         state.value.goalsWithMilestones.forEach {
-            onEvent(GoalsEvent.SetButtonToFalse(it.goal))
+            if (dateDiff(it.goal) == 1) {
+                onEvent(GoalsEvent.SetButtonToFalse(it.goal))
+            }
         }
 
     }
@@ -63,7 +65,10 @@ class GoalsViewModel @Inject constructor(
 
             is GoalsEvent.RestoreGoal -> {
                 viewModelScope.launch {
-                    goalUseCases.addGoalWithMilestones(recentDeletedGoal ?: return@launch, recentlyDeletedMilestones)
+                    goalUseCases.addGoalWithMilestones(
+                        recentDeletedGoal ?: return@launch,
+                        recentlyDeletedMilestones
+                    )
                 }
             }
 
@@ -110,13 +115,11 @@ class GoalsViewModel @Inject constructor(
 
             is GoalsEvent.SetButtonToFalse -> {
                 viewModelScope.launch {
-                    if (dateDiff(event.goal) == 1) {
-                        goalUseCases.updateGoal(
-                            event.goal.copy(
-                                isClicked = false
-                            )
+                    goalUseCases.updateGoal(
+                        event.goal.copy(
+                            isClicked = false
                         )
-                    }
+                    )
                 }
             }
         }
@@ -137,7 +140,7 @@ class GoalsViewModel @Inject constructor(
 
     private fun dateDiff(goal: Goal): Int {
         return Days.daysBetween(
-            DateTime(goal.lastClick).toLocalDate(),
+            DateTime(goal.lastClick).withTimeAtStartOfDay().toLocalDate(),
             DateTime(System.currentTimeMillis()).toLocalDate()
         ).days
     }
