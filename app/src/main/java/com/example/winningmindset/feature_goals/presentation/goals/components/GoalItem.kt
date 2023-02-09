@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -61,7 +60,7 @@ fun GoalItem(
     onDelete: () -> Unit,
     onClickEdit: () -> Unit,
     recordClick: () -> Unit,
-    dateDiff: Int
+    streaks: Int
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -82,27 +81,19 @@ fun GoalItem(
             )
     ) {
         Column {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = dateDiff.toString()
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(text = DateTime(System.currentTimeMillis()).toLocalDate().toString())
-                Spacer(modifier = Modifier.weight(1f))
-                Text(text = DateTime(goal.lastClick).toLocalDate().toString())
-            }
             TopItem(
                 goal = goal.goal,
                 color = goal.color,
                 recordClick = recordClick,
                 isClicked = isClicked,
-                numberOfDaysClicked = goal.totalDays.toString()
+                numberOfDaysClicked = streaks.toString()
             )
         }
         if (expanded) {
             ResolutionDetails(
                 typeOfMindset = goal.typeOfMindset,
-                color = goal.color
+                color = goal.color,
+                numberOfDaysClicked = goal.totalDays
             )
             milestone.forEachIndexed { index, milestone ->
                 MilestonesPerGoalItem(
@@ -193,6 +184,7 @@ fun ResolutionDetails(
     typeOfMindset: String,
     modifier: Modifier = Modifier,
     color: Long,
+    numberOfDaysClicked: Int
 ) {
     Box(
         modifier = modifier
@@ -203,6 +195,13 @@ fun ResolutionDetails(
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            Row(
+                modifier = Modifier.padding(end = 8.dp)
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+                Text(text = "Total Number Of days: ", color = Color(color))
+                Text(text = numberOfDaysClicked.toString(), color = Color(color))
+            }
             MindsetType(typeOfMindset = typeOfMindset, color = color)
         }
     }

@@ -1,6 +1,5 @@
 package com.example.winningmindset.feature_goals.presentation.goals
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -13,6 +12,8 @@ import com.example.winningmindset.feature_goals.domain.util.GoalOrder
 import com.example.winningmindset.feature_goals.domain.util.OrderType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -35,25 +36,53 @@ class GoalsViewModel @Inject constructor(
 
     private var getGoalsJob: Job? = null
 
+    private val _streak = MutableStateFlow(0)
+    val streak: StateFlow<Int>
+        get() = _streak
+
     init {
         getGoals(GoalOrder.Date(OrderType.Descending))
 
         updateButtons()
+        getStreak()
     }
 
     fun updateButtons() {
         viewModelScope.launch {
             val goalsWithMilestones = goalUseCases.getGoalsWithMilestones().first()
             val newState = state.value.copy()
-            Log.d("GoalsViewModel", "Setting button to false for state $newState")
             goalsWithMilestones.forEach {
-                Log.d("GoalsViewModel", "Setting button to false for value ${it.goal}")
                 if (dateDiff(it.goal) == 1) {
-                    Log.d("GoalsViewModel", "Setting button to false for goal: ${it.goal.goal}")
                     onEvent(GoalsEvent.SetButtonToFalse(it.goal))
                 }
             }
             _state.value = newState
+        }
+    }
+
+
+    private fun getStreak() {
+        viewModelScope.launch {
+            val goalsWithMilestones = goalUseCases.getGoalsWithMilestones().first()
+            goalsWithMilestones.forEach {
+                it.goal.goalId?.let { it1 -> goalUseCases.getRecordsPerGoal(it1) }
+                    ?.collect() { records ->
+                        if (records.isNotEmpty()) {
+                            val days = Days.daysBetween(
+                                DateTime(records.last().currentDay).withTimeAtStartOfDay()
+                                    .toLocalDate(),
+                                DateTime(System.currentTimeMillis()).toLocalDate()
+                            ).days
+                            if (days <= 1) {
+                                _streak.value += 1
+                            } else {
+                                _streak.value = 1
+                            }
+                        } else {
+                            _streak.value = 0
+                        }
+                    }
+            }
         }
     }
 
@@ -161,9 +190,8 @@ class GoalsViewModel @Inject constructor(
 
 
     fun dateDiff(goal: Goal): Int {
-        return Days.daysBetween(
-            DateTime(goal.lastClick).withTimeAtStartOfDay().toLocalDate(),
-            DateTime(System.currentTimeMillis()).toLocalDate()
-        ).days
+        val lastClickDate = DateTime(goal.lastClick).withTimeAtStartOfDay().toLocalDate()
+        val currentDate = DateTime(System.currentTimeMillis()).toLocalDate()
+        return Days.daysBetween(lastClickDate, currentDate).days
     }
 }

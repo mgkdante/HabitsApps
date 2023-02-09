@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -56,6 +57,8 @@ fun GoalsScreen(
     viewModel: GoalsViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
+
+    val streaks = viewModel.streak.collectAsState()
 
     DisposableEffect("") {
         onDispose {
@@ -173,7 +176,8 @@ fun GoalsScreen(
                                         "?goalId=${goalWithMilestones.goal.goalId}"
                             )
                         },
-                        dateDiff = viewModel.dateDiff(goalWithMilestones.goal)
+                        dateDiff = viewModel.dateDiff(goalWithMilestones.goal),
+                        streaks = streaks.value
                     )
 
                 }
