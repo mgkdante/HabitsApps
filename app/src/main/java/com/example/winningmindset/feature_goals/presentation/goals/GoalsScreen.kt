@@ -176,7 +176,6 @@ fun GoalsScreen(
                                         "?goalId=${goalWithMilestones.goal.goalId}"
                             )
                         },
-                        dateDiff = viewModel.dateDiff(goalWithMilestones.goal),
                         streaks = streaks.value
                     )
 
