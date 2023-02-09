@@ -48,7 +48,6 @@ import com.example.winningmindset.feature_goals.domain.model.Goal
 import com.example.winningmindset.feature_goals.domain.model.Milestone
 import com.example.winningmindset.ui.theme.Shapes
 import org.joda.time.DateTime
-import org.joda.time.Days
 import java.text.DateFormat
 
 
@@ -62,6 +61,7 @@ fun GoalItem(
     onDelete: () -> Unit,
     onClickEdit: () -> Unit,
     recordClick: () -> Unit,
+    dateDiff: Int
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -84,10 +84,7 @@ fun GoalItem(
         Column {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = Days.daysBetween(
-                        DateTime(goal.lastClick).toLocalDate(),
-                        DateTime(System.currentTimeMillis()).toLocalDate()
-                    ).days.toString()
+                    text = dateDiff.toString()
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(text = DateTime(System.currentTimeMillis()).toLocalDate().toString())

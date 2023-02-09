@@ -63,8 +63,6 @@ import com.example.winningmindset.ui.theme.Shapes
 import kotlinx.coroutines.flow.collectLatest
 
 
-var currentUiColor = colors[0]
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditGoalScreen(
@@ -114,6 +112,7 @@ fun AddEditGoalScreen(
                 viewModel.onEvent(AddEditGoalEvent.SaveGoal)
             },
             modifier = Modifier.padding(padding),
+            color = viewModel.goal.value.color
         )
     }
 }
@@ -125,6 +124,7 @@ fun DataEntryBody(
     milestoneList: List<MilestoneState>,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier,
+    color: Long
 ) {
     LazyColumn(
         modifier = modifier
@@ -144,7 +144,7 @@ fun DataEntryBody(
                 onClick = onSaveClick,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = currentUiColor
+                    containerColor = Color(color)
                 )
             ) {
                 Text("Save")
@@ -164,6 +164,7 @@ fun DataEntryForm(
 ) {
     val goal = viewModel.goal
     val milestone = viewModel.singleMilestoneState
+    val currentColor = viewModel.goal.value.color
 
     Column(
         modifier = modifier
@@ -171,67 +172,69 @@ fun DataEntryForm(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-            OutlinedTextField(
-                value = goal.value.goal,
-                label = { Text(text = "What is your goal?") },
-                onValueChange = { viewModel.onEvent(AddEditGoalEvent.EnterGoal(it)) },
-                placeholder = {
-                    Text(
-                        text = "Ex: Run a marathon, start a business, eat healthier, learn a new language, etc",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 90.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = currentUiColor,
-                    focusedLabelColor = currentUiColor
+        OutlinedTextField(
+            value = goal.value.goal,
+            label = { Text(text = "What is your goal?") },
+            onValueChange = { viewModel.onEvent(AddEditGoalEvent.EnterGoal(it)) },
+            placeholder = {
+                Text(
+                    text = "Ex: Run a marathon, start a business, eat healthier, learn a new language, etc",
+                    style = MaterialTheme.typography.bodyMedium
                 )
-            )
-        }
-        Spacer(modifier = modifier.height(16.dp))
-            OutlinedTextField(
-                value = goal.value.typeOfMindset,
-                label = { Text(text = "What type of person can accomplish this goal?") },
-                onValueChange = { viewModel.onEvent(AddEditGoalEvent.EnterTypeOfMindset(it)) },
-                placeholder = {
-                    Text(
-                        text = "An organized person, an athletic person, a hardworking person, etc",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                },
-                singleLine = false,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 90.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = currentUiColor,
-                    focusedLabelColor = currentUiColor
-                )
-            )
-        Spacer(modifier = modifier.height(16.dp))
-        EnterMilestone(
-            milestone = milestone.value.milestone,
-            onValueChanged = { viewModel.onEvent(AddEditGoalEvent.EnterMilestone(it)) },
-            onValueAddedToList = {
-                if (milestoneState.milestone != "") {
-                    viewModel.onEvent(
-                        AddEditGoalEvent.SaveMilestoneToList(milestone.value.toMilestone())
-                    )
-                }
             },
-        )
-        MilestoneList(milestoneList = milestoneList)
-        Spacer(modifier = modifier.height(16.dp))
-        ColorButton(
-            colorList = colors,
-            onColorSelected = {
-                viewModel.onEvent(AddEditGoalEvent.OnChangeColor(it.toArgb().toLong()))
-            }
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 90.dp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color(currentColor),
+                focusedLabelColor = Color(currentColor)
+            )
         )
     }
+    Spacer(modifier = modifier.height(16.dp))
+    OutlinedTextField(
+        value = goal.value.typeOfMindset,
+        label = { Text(text = "What type of person can accomplish this goal?") },
+        onValueChange = { viewModel.onEvent(AddEditGoalEvent.EnterTypeOfMindset(it)) },
+        placeholder = {
+            Text(
+                text = "An organized person, an athletic person, a hardworking person, etc",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        },
+        singleLine = false,
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 90.dp),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(viewModel.goal.value.color),
+            focusedLabelColor = Color(viewModel.goal.value.color)
+        )
+    )
+    Spacer(modifier = modifier.height(16.dp))
+    EnterMilestone(
+        milestone = milestone.value.milestone,
+        onValueChanged = { viewModel.onEvent(AddEditGoalEvent.EnterMilestone(it)) },
+        onValueAddedToList = {
+            if (milestoneState.milestone != "") {
+                viewModel.onEvent(
+                    AddEditGoalEvent.SaveMilestoneToList(milestone.value.toMilestone())
+                )
+            }
+        },
+        color = currentColor
+    )
+    MilestoneList(milestoneList = milestoneList)
+    Spacer(modifier = modifier.height(16.dp))
+    ColorButton(
+        colorList = colors,
+        onColorSelected = {
+            viewModel.onEvent(AddEditGoalEvent.OnChangeColor(it.toArgb().toLong()))
+        },
+        color = viewModel.goal.value.color
+    )
+}
 
 @Composable
 fun MilestoneList(
@@ -251,6 +254,7 @@ fun EnterMilestone(
     milestone: String,
     onValueChanged: (String) -> Unit,
     onValueAddedToList: () -> Unit,
+    color: Long
 ) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -268,8 +272,8 @@ fun EnterMilestone(
                     )
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = currentUiColor,
-                    focusedLabelColor = currentUiColor
+                    focusedBorderColor = Color(color),
+                    focusedLabelColor = Color(color)
                 )
             )
             IconButton(onClick = onValueAddedToList) {
@@ -299,7 +303,7 @@ fun MilestoneListItem(
         ) {
             Box(
                 modifier = Modifier
-                    .border(1.dp, color = currentUiColor)
+                    .border(1.dp, color = Color(viewModel.goal.value.color))
                     .fillMaxSize()
                     .weight(0.3f),
                 contentAlignment = Alignment.CenterStart
@@ -312,7 +316,7 @@ fun MilestoneListItem(
             }
             Box(
                 modifier = Modifier
-                    .border(1.dp, color = currentUiColor)
+                    .border(1.dp, color = Color(viewModel.goal.value.color))
                     .weight(0.7f)
                     .fillMaxSize(),
                 contentAlignment = Alignment.CenterStart
@@ -341,12 +345,13 @@ fun MilestoneListItem(
 fun ColorButton(
     onColorSelected: (Color) -> Unit,
     colorList: List<Color>,
+    color: Long
 ) {
     var isColorPickerOpen by remember {
         mutableStateOf(false)
     }
 
-    var currentlySelected by remember { mutableStateOf(currentUiColor) }
+    var currentlySelected by remember { mutableStateOf(Color(color)) }
 
     OutlinedButton(
         modifier = Modifier
@@ -365,7 +370,7 @@ fun ColorButton(
         ) {
             Text(
                 text = "Select color",
-                color = currentUiColor,
+                color = Color(color),
                 style = MaterialTheme.typography.bodyLarge
             )
             Canvas(
@@ -388,7 +393,8 @@ fun ColorButton(
                 currentlySelected = it
                 onColorSelected(it)
             },
-            colorList = colorList
+            colorList = colorList,
+            color = color
         )
     } else onColorSelected(currentlySelected)
 }
@@ -398,7 +404,8 @@ fun ColorButton(
 private fun ColorDialog(
     colorList: List<Color>,
     onDismiss: () -> Unit,
-    onColorSelected: (Color) -> Unit // when the save button is clicked
+    onColorSelected: (Color) -> Unit, // when the save button is clicked
+    color: Long
 ) {
     val gridState = rememberLazyGridState()
 
@@ -420,7 +427,6 @@ private fun ColorDialog(
                         .requiredSize(70.dp)
                         .clickable {
                             onColorSelected(color)
-                            currentUiColor = color
                             onDismiss()
                         }
                     ) {}

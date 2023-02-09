@@ -32,6 +32,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -55,6 +56,13 @@ fun GoalsScreen(
     viewModel: GoalsViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
+
+    DisposableEffect("") {
+        onDispose {
+            viewModel.updateButtons()
+        }
+    }
+
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -134,40 +142,40 @@ fun GoalsScreen(
                     }
                 }
                 items(state.goalsWithMilestones) { goalWithMilestones ->
-                    goalWithMilestones.goal.isClicked.let {
-                        GoalItem(
-                            goal = goalWithMilestones.goal,
-                            isClicked = it,
-                            milestone = goalWithMilestones.milestones,
-                            onDelete = {
-                                viewModel.onEvent(
-                                    GoalsEvent.DeleteGoal(
-                                        goalWithMilestones.goal,
-                                        goalWithMilestones.milestones
-                                    )
+                    GoalItem(
+                        goal = goalWithMilestones.goal,
+                        isClicked = goalWithMilestones.goal.isClicked,
+                        milestone = goalWithMilestones.milestones,
+                        onDelete = {
+                            viewModel.onEvent(
+                                GoalsEvent.DeleteGoal(
+                                    goalWithMilestones.goal,
+                                    goalWithMilestones.milestones
                                 )
-                                scope.launch {
-                                    val result = snackbarHostState.showSnackbar(
-                                        message = "Note Deleted",
-                                        actionLabel = "Undo",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                    if (result == SnackbarResult.ActionPerformed) {
-                                        viewModel.onEvent(GoalsEvent.RestoreGoal)
-                                    }
+                            )
+                            scope.launch {
+                                val result = snackbarHostState.showSnackbar(
+                                    message = "Note Deleted",
+                                    actionLabel = "Undo",
+                                    duration = SnackbarDuration.Short
+                                )
+                                if (result == SnackbarResult.ActionPerformed) {
+                                    viewModel.onEvent(GoalsEvent.RestoreGoal)
                                 }
-                            },
-                            recordClick = {
-                                viewModel.onEvent(GoalsEvent.ActionClick(goalWithMilestones.goal))
-                            },
-                            onClickEdit = {
-                                navController.navigate(
-                                    Screen.AddEditScreen.route +
-                                            "?goalId=${goalWithMilestones.goal.goalId}"
-                                )
                             }
-                        )
-                    }
+                        },
+                        recordClick = {
+                            viewModel.onEvent(GoalsEvent.ActionClick(goalWithMilestones.goal))
+                        },
+                        onClickEdit = {
+                            navController.navigate(
+                                Screen.AddEditScreen.route +
+                                        "?goalId=${goalWithMilestones.goal.goalId}"
+                            )
+                        },
+                        dateDiff = viewModel.dateDiff(goalWithMilestones.goal)
+                    )
+
                 }
             }
         }

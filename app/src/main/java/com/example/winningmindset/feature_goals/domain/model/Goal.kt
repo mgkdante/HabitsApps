@@ -38,7 +38,7 @@ data class Goal(
             Color(0xFFFF70A6),
             Color(0xFFFFCC80),
             Color(0xFF9d71e8),
-            Color(0xFF973D3D),
+            Color(0xFF00E5FF),
             Color(0xFFffa69e),
             Color(0xFF5aa9e6),
 

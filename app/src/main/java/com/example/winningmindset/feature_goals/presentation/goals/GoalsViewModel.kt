@@ -1,5 +1,6 @@
 package com.example.winningmindset.feature_goals.presentation.goals
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,7 @@ import com.example.winningmindset.feature_goals.domain.util.GoalOrder
 import com.example.winningmindset.feature_goals.domain.util.OrderType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -36,10 +38,23 @@ class GoalsViewModel @Inject constructor(
     init {
         getGoals(GoalOrder.Date(OrderType.Descending))
 
-        state.value.goalsWithMilestones.forEach {
-            onEvent(GoalsEvent.SetButtonToFalse(it.goal))
-        }
+        updateButtons()
+    }
 
+    fun updateButtons() {
+        viewModelScope.launch {
+            val goalsWithMilestones = goalUseCases.getGoalsWithMilestones().first()
+            val newState = state.value.copy()
+            Log.d("GoalsViewModel", "Setting button to false for state $newState")
+            goalsWithMilestones.forEach {
+                Log.d("GoalsViewModel", "Setting button to false for value ${it.goal}")
+                if (dateDiff(it.goal) == 1) {
+                    Log.d("GoalsViewModel", "Setting button to false for goal: ${it.goal.goal}")
+                    onEvent(GoalsEvent.SetButtonToFalse(it.goal))
+                }
+            }
+            _state.value = newState
+        }
     }
 
     fun onEvent(event: GoalsEvent) {
@@ -63,7 +78,10 @@ class GoalsViewModel @Inject constructor(
 
             is GoalsEvent.RestoreGoal -> {
                 viewModelScope.launch {
-                    goalUseCases.addGoalWithMilestones(recentDeletedGoal ?: return@launch, recentlyDeletedMilestones)
+                    goalUseCases.addGoalWithMilestones(
+                        recentDeletedGoal ?: return@launch,
+                        recentlyDeletedMilestones
+                    )
                 }
             }
 
@@ -110,13 +128,20 @@ class GoalsViewModel @Inject constructor(
 
             is GoalsEvent.SetButtonToFalse -> {
                 viewModelScope.launch {
-                    if (dateDiff(event.goal) == 1) {
-                        goalUseCases.updateGoal(
-                            event.goal.copy(
-                                isClicked = false
-                            )
+                    goalUseCases.updateGoal(
+                        event.goal.copy(
+                            isClicked = false
                         )
-                    }
+                    )
+                    // Update the state with the new goal
+                    _state.value =
+                        _state.value.copy(goalsWithMilestones = state.value.goalsWithMilestones.map {
+                            if (it.goal.goalId == event.goal.goalId) {
+                                it.copy(goal = event.goal)
+                            } else {
+                                it
+                            }
+                        })
                 }
             }
         }
@@ -135,11 +160,10 @@ class GoalsViewModel @Inject constructor(
     }
 
 
-    private fun dateDiff(goal: Goal): Int {
+    fun dateDiff(goal: Goal): Int {
         return Days.daysBetween(
-            DateTime(goal.lastClick).toLocalDate(),
+            DateTime(goal.lastClick).withTimeAtStartOfDay().toLocalDate(),
             DateTime(System.currentTimeMillis()).toLocalDate()
         ).days
     }
-
 }
