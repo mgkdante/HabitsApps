@@ -20,6 +20,12 @@ This Android application helps you track your goals and milestones, fostering a 
     * Use cases for encapsulating business logic.
     * Dependency injection with Hilt.
 
+## Screenshots
+![App5.jpg](App5.jpg)
+![App4.jpg](App4.jpg)
+![App3.jpg](App3.jpg)
+![App2.jpg](App2.jpg)
+![App1.jpg](App1.jpg)
 
 ## Technologies Used
 
